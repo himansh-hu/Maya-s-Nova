@@ -46,45 +46,33 @@ export default function Footer() {
             <h3 className="text-lg font-medium mb-4">Shop</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/products">
-                  <a className="text-muted-foreground hover:text-foreground transition-colors">
-                    All Products
-                  </a>
+                <Link href="/products" className="text-muted-foreground hover:text-foreground transition-colors">
+                  All Products
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=tech-accessories">
-                  <a className="text-muted-foreground hover:text-foreground transition-colors">
-                    Tech Accessories
-                  </a>
+                <Link href="/products?category=tech-accessories" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Tech Accessories
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=home-decor">
-                  <a className="text-muted-foreground hover:text-foreground transition-colors">
-                    Home Decor
-                  </a>
+                <Link href="/products?category=home-decor" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Home Decor
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=collectibles">
-                  <a className="text-muted-foreground hover:text-foreground transition-colors">
-                    Collectibles
-                  </a>
+                <Link href="/products?category=collectibles" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Collectibles
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=gaming">
-                  <a className="text-muted-foreground hover:text-foreground transition-colors">
-                    Gaming
-                  </a>
+                <Link href="/products?category=gaming" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Gaming
                 </Link>
               </li>
               <li>
-                <Link href="/customize">
-                  <a className="text-muted-foreground hover:text-foreground transition-colors">
-                    Custom Designs
-                  </a>
+                <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Custom Designs
                 </Link>
               </li>
             </ul>
@@ -95,31 +83,23 @@ export default function Footer() {
             <h3 className="text-lg font-medium mb-4">Support</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/faq">
-                  <a className="text-muted-foreground hover:text-foreground transition-colors">
-                    FAQ
-                  </a>
+                <Link href="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
+                  FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/shipping">
-                  <a className="text-muted-foreground hover:text-foreground transition-colors">
-                    Shipping & Returns
-                  </a>
+                <Link href="/shipping" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Shipping & Returns
                 </Link>
               </li>
               <li>
-                <Link href="/care">
-                  <a className="text-muted-foreground hover:text-foreground transition-colors">
-                    Care Instructions
-                  </a>
+                <Link href="/care" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Care Instructions
                 </Link>
               </li>
               <li>
-                <Link href="/contact">
-                  <a className="text-muted-foreground hover:text-foreground transition-colors">
-                    Contact Us
-                  </a>
+                <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Contact Us
                 </Link>
               </li>
               <li>
