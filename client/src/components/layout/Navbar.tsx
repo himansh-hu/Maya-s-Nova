@@ -3,6 +3,8 @@ import { Link, useLocation } from 'wouter';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useTheme } from '@/context/ThemeContext';
+import { useCurrency } from '@/context/CurrencyContext';
+import CurrencySelector from '@/components/currency/CurrencySelector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -36,6 +38,7 @@ export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
   const { itemCount } = useCart();
   const { theme, toggleTheme } = useTheme();
+  const { currency } = useCurrency();
 
   // Handle scroll effect
   useEffect(() => {
@@ -107,6 +110,9 @@ export default function Navbar() {
               />
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
+            
+            {/* Currency Selector */}
+            <CurrencySelector />
             
             {/* Theme Toggle */}
             <Button 
@@ -296,8 +302,13 @@ export default function Navbar() {
                     </div>
                   )}
                   
-                  {/* Theme Toggle Mobile */}
-                  <div className="mt-6 pt-6 border-t">
+                  {/* Currency and Theme - Mobile */}
+                  <div className="mt-6 pt-6 border-t space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">Select Currency</span>
+                      <CurrencySelector />
+                    </div>
+                    
                     <Button 
                       variant="outline" 
                       className="w-full justify-between" 

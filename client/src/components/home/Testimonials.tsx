@@ -16,7 +16,7 @@ const testimonials = [
     name: 'Sarah Chen',
     avatar: 'SC',
     role: 'Tech Enthusiast',
-    content: 'The customization options are incredible! I was able to create a completely personalized phone dock that matches my setup perfectly.',
+    content: "The customization options are incredible! I was able to create a completely personalized phone dock that matches my setup perfectly.",
     rating: 5
   },
   {
@@ -24,7 +24,7 @@ const testimonials = [
     name: 'Marcus Williams',
     avatar: 'MW',
     role: 'Teacher',
-    content: 'I use these 3D models in my classroom to help students visualize complex concepts. The educational collection is a game-changer for hands-on learning.',
+    content: "I use these 3D models in my classroom to help students visualize complex concepts. The educational collection is a game-changer for hands-on learning.",
     rating: 4
   },
 ];
