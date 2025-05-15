@@ -243,6 +243,27 @@ export default function Navbar() {
                   
                   <Separator className="my-6" />
                   
+                  {/* Currency and Theme - Mobile */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center">
+                      <span className="text-sm font-medium mr-3">Currency:</span>
+                      <CurrencySelector />
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="rounded-full" 
+                      onClick={toggleTheme}
+                      aria-label="Toggle theme"
+                    >
+                      {theme === 'dark' ? (
+                        <Sun className="h-5 w-5" />
+                      ) : (
+                        <Moon className="h-5 w-5" />
+                      )}
+                    </Button>
+                  </div>
+                  
                   {/* Account Section */}
                   {isAuthenticated ? (
                     <div className="mt-auto space-y-4">

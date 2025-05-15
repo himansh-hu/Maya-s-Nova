@@ -11,10 +11,8 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Company Information */}
           <div className="lg:col-span-2">
-            <Link href="/">
-              <a className="inline-block">
-                <span className="text-2xl font-bold font-['Space_Grotesk'] text-primary">3D<span className="text-orange-500">Print</span><span className="text-teal-500">Wonders</span></span>
-              </a>
+            <Link href="/" className="inline-block">
+              <span className="text-2xl font-bold font-['Space_Grotesk'] text-primary">3D<span className="text-orange-500">Print</span><span className="text-teal-500">Wonders</span></span>
             </Link>
             <p className="mt-4 text-muted-foreground max-w-md">
               Bringing your ideas to life through innovative 3D printing technology. Customize, create, and collect unique 3D-printed products designed for modern living.
