@@ -1,0 +1,231 @@
+import { useState } from 'react';
+import { Link, useLocation } from 'wouter';
+import { Helmet } from 'react-helmet';
+import { useAuth } from '@/context/AuthContext';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { 
+  Form, 
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage 
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+
+// Login form schema
+const loginSchema = z.object({
+  email: z.string()
+    .email('Please enter a valid email address'),
+  password: z.string()
+    .min(6, 'Password must be at least 6 characters'),
+  rememberMe: z.boolean().default(false),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
+
+export default function Login() {
+  const [location, navigate] = useLocation();
+  const { login, isAuthenticated, loading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Redirect if already authenticated
+  if (isAuthenticated) {
+    navigate('/');
+    return null;
+  }
+  
+  // Form definition
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+      rememberMe: false,
+    },
+  });
+  
+  // Handle form submission
+  const onSubmit = async (data: LoginFormValues) => {
+    setIsSubmitting(true);
+    try {
+      const success = await login(data.email, data.password);
+      
+      if (success) {
+        // Redirect after successful login
+        // Check if there's a return_to parameter in the URL
+        const params = new URLSearchParams(window.location.search);
+        const returnTo = params.get('return_to');
+        
+        navigate(returnTo || '/');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  return (
+    <>
+      <Helmet>
+        <title>Sign In | 3D Print Wonders</title>
+        <meta name="description" content="Sign in to your 3D Print Wonders account to view your orders, manage your profile, and checkout faster." />
+      </Helmet>
+      
+      <div className="container max-w-md mx-auto px-4 py-16">
+        <Card className="border shadow-sm">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">Sign In</CardTitle>
+            <CardDescription className="text-center">
+              Enter your email and password to access your account
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="email" 
+                          placeholder="email@example.com" 
+                          {...field} 
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center justify-between">
+                        <FormLabel>Password</FormLabel>
+                        <Link href="/forgot-password">
+                          <a className="text-xs text-primary hover:underline">
+                            Forgot password?
+                          </a>
+                        </Link>
+                      </div>
+                      <FormControl>
+                        <Input 
+                          type="password" 
+                          placeholder="••••••••" 
+                          {...field} 
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="rememberMe"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          disabled={isSubmitting}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal cursor-pointer">
+                        Remember me for 30 days
+                      </FormLabel>
+                    </FormItem>
+                  )}
+                />
+                
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+                      Signing In...
+                    </>
+                  ) : (
+                    "Sign In"
+                  )}
+                </Button>
+              </form>
+            </Form>
+            
+            <div className="mt-4 relative">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <Button variant="outline" type="button" disabled={isSubmitting}>
+                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                  <path
+                    d="M12.0003 4.75C13.7703 4.75 15.3553 5.36002 16.6053 6.54998L20.0303 3.125C17.9502 1.19 15.2353 0 12.0003 0C7.31028 0 3.25526 2.69 1.28027 6.60998L5.27028 9.70498C6.21525 6.86002 8.87028 4.75 12.0003 4.75Z"
+                    fill="#EA4335"
+                  />
+                  <path
+                    d="M23.49 12.275C23.49 11.49 23.415 10.73 23.3 10H12V14.51H18.47C18.18 15.99 17.34 17.25 16.08 18.08L19.945 21.06C22.2 19.01 23.49 15.92 23.49 12.275Z"
+                    fill="#4285F4"
+                  />
+                  <path
+                    d="M5.26498 14.2949C5.02498 13.5699 4.88501 12.7999 4.88501 11.9999C4.88501 11.1999 5.01998 10.4299 5.26498 9.7049L1.275 6.60986C0.46 8.22986 0 10.0599 0 11.9999C0 13.9399 0.46 15.7699 1.28 17.3899L5.26498 14.2949Z"
+                    fill="#FBBC05"
+                  />
+                  <path
+                    d="M12.0004 24.0001C15.2404 24.0001 17.9654 22.935 19.9454 21.06L16.0804 18.08C15.0454 18.77 13.6954 19.2001 12.0004 19.2001C8.8704 19.2001 6.21537 17.09 5.2654 14.295L1.27539 17.39C3.25537 21.31 7.3104 24.0001 12.0004 24.0001Z"
+                    fill="#34A853"
+                  />
+                </svg>
+                Google
+              </Button>
+              
+              <Button variant="outline" type="button" disabled={isSubmitting}>
+                <svg viewBox="0 0 24 24" className="mr-2 h-4 w-4 fill-current">
+                  <path d="M16.365 1.43c0 1.14-.788 2.165-1.854 2.717.466 1.46 1.334 2.731 2.415 3.572.304-.14.688-.225 1.141-.225a4.18 4.18 0 0 1 1.343.224 8.337 8.337 0 0 1-1.76 3.826 6.413 6.413 0 0 1-1.856 1.562 10.161 10.161 0 0 1-2.732.799c-2.285.333-4.658-.254-6.53-1.644-1.73-1.29-2.876-3.18-3.261-5.288a6.783 6.783 0 0 1-.143-1.403A6.642 6.642 0 0 1 3.995 2.45c.493-.59 1.146-.902 1.852-.865.653.036 1.329.377 1.957.88h.01l.138.135a1.4 1.4 0 0 0 1.25.547 1.398 1.398 0 0 0 1.25-.546l.137-.136a4.63 4.63 0 0 1 1.096-.61 4.108 4.108 0 0 1 1.035-.26c.661-.077 1.29.011 1.801.261.661.324 1.108.836 1.253 1.481.145.645-.05 1.365-.536 2.094Zm-7.25 8.955a7.025 7.025 0 0 0-1.2-1.148 6.967 6.967 0 0 0-1.547-.75 7.027 7.027 0 0 0-1.158-.224 4.283 4.283 0 0 0-.363-.012c-.628 0-1.011.149-1.163.257a.389.389 0 0 0-.146.23.367.367 0 0 0 .12.33l.038.03c.051.04.133.094.248.147.32.147.842.323 1.588.323a5.548 5.548 0 0 0 1.692-.268 4.625 4.625 0 0 0 1.109-.54 4.841 4.841 0 0 0 .953-.83c-.08-.05-.163-.099-.247-.146a6.308 6.308 0 0 0-.924-.4Z" />
+                </svg>
+                Apple
+              </Button>
+            </div>
+          </CardContent>
+          
+          <CardFooter className="flex justify-center">
+            <p className="text-center text-sm text-muted-foreground">
+              Don't have an account?{' '}
+              <Link href="/register">
+                <a className="text-primary hover:underline">
+                  Sign up
+                </a>
+              </Link>
+            </p>
+          </CardFooter>
+        </Card>
+      </div>
+    </>
+  );
+}
