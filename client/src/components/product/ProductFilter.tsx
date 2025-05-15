@@ -26,45 +26,48 @@ interface Category {
 
 interface ProductFilterProps {
   categories: Category[];
-  initialFilters: {
+  filters: {
     category?: string;
     minPrice?: number;
     maxPrice?: number;
     sort?: string;
     search?: string;
   };
-  onFilterChange: (filters: any) => void;
+  onChange: (filters: any) => void;
+  onClose?: () => void;
   isMobile?: boolean;
 }
 
 export default function ProductFilter({
   categories,
-  initialFilters,
-  onFilterChange,
+  filters,
+  onChange,
+  onClose,
   isMobile = false
 }: ProductFilterProps) {
-  const [activeFilters, setActiveFilters] = useState(initialFilters);
+  const [activeFilters, setActiveFilters] = useState(filters);
   const [priceRange, setPriceRange] = useState<[number, number]>([
-    initialFilters.minPrice || 0,
-    initialFilters.maxPrice || 1000
+    filters.minPrice || 0,
+    filters.maxPrice || 1000
   ]);
   const { formatPrice } = useCurrency();
   const [location] = useLocation();
   const searchParams = new URLSearchParams(location.split('?')[1] || '');
   
-  // Update price range when initialFilters change
+  // Update price range when filters change
   useEffect(() => {
     setPriceRange([
-      initialFilters.minPrice || 0,
-      initialFilters.maxPrice || 1000
+      filters.minPrice || 0,
+      filters.maxPrice || 1000
     ]);
-  }, [initialFilters.minPrice, initialFilters.maxPrice]);
+    setActiveFilters(filters);
+  }, [filters]);
   
   // Handle category change
   const handleCategoryChange = (category: string | undefined) => {
     setActiveFilters(prev => {
       const newFilters = { ...prev, category };
-      onFilterChange(newFilters);
+      onChange(newFilters);
       return newFilters;
     });
   };
@@ -82,7 +85,7 @@ export default function ProductFilter({
         minPrice: priceRange[0], 
         maxPrice: priceRange[1] 
       };
-      onFilterChange(newFilters);
+      onChange(newFilters);
       return newFilters;
     });
   };
@@ -91,7 +94,7 @@ export default function ProductFilter({
   const handleSortChange = (sort: string) => {
     setActiveFilters(prev => {
       const newFilters = { ...prev, sort };
-      onFilterChange(newFilters);
+      onChange(newFilters);
       return newFilters;
     });
   };
@@ -107,7 +110,11 @@ export default function ProductFilter({
     
     setActiveFilters(newFilters);
     setPriceRange([0, 1000]);
-    onFilterChange(newFilters);
+    onChange(newFilters);
+    
+    if (onClose) {
+      onClose();
+    }
   };
   
   // Count active filters
