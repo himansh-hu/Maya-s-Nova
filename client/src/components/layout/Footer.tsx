@@ -103,10 +103,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/track-order">
-                  <a className="text-muted-foreground hover:text-foreground transition-colors">
-                    Track Your Order
-                  </a>
+                <Link href="/track-order" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Track Your Order
                 </Link>
               </li>
             </ul>
@@ -139,20 +137,14 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} 3D Print Wonders. All rights reserved.
           </p>
           <div className="flex space-x-4 mt-4 md:mt-0">
-            <Link href="/privacy">
-              <a className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Privacy Policy
-              </a>
+            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Privacy Policy
             </Link>
-            <Link href="/terms">
-              <a className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Terms of Service
-              </a>
+            <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Terms of Service
             </Link>
-            <Link href="/sitemap">
-              <a className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                Sitemap
-              </a>
+            <Link href="/sitemap" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Sitemap
             </Link>
           </div>
         </div>
