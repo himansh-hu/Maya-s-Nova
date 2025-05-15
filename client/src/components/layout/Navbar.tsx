@@ -70,32 +70,26 @@ export default function Navbar() {
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex md:items-center md:space-x-8">
-            <Link href="/">
-              <a className={`text-sm font-medium ${
+            <Link href="/" className={`text-sm font-medium ${
                 location === '/' 
                 ? 'text-foreground border-b-2 border-primary' 
                 : 'text-muted-foreground hover:text-foreground transition-colors'
               } px-2 py-1`}>
                 Home
-              </a>
             </Link>
-            <Link href="/products">
-              <a className={`text-sm font-medium ${
+            <Link href="/products" className={`text-sm font-medium ${
                 location === '/products' 
                 ? 'text-foreground border-b-2 border-primary' 
                 : 'text-muted-foreground hover:text-foreground transition-colors'
               } px-2 py-1`}>
                 Products
-              </a>
             </Link>
-            <Link href="/customize">
-              <a className={`text-sm font-medium ${
+            <Link href="/customize" className={`text-sm font-medium ${
                 location === '/customize' 
                 ? 'text-foreground border-b-2 border-primary' 
                 : 'text-muted-foreground hover:text-foreground transition-colors'
               } px-2 py-1`}>
                 Customize
-              </a>
             </Link>
           </nav>
           
@@ -233,25 +227,17 @@ export default function Navbar() {
                   </div>
                   
                   <nav className="flex flex-col space-y-4">
-                    <Link href="/">
-                      <a className="text-base font-medium hover:text-primary transition-colors">
-                        Home
-                      </a>
+                    <Link href="/" className="text-base font-medium hover:text-primary transition-colors">
+                      Home
                     </Link>
-                    <Link href="/products">
-                      <a className="text-base font-medium hover:text-primary transition-colors">
-                        Products
-                      </a>
+                    <Link href="/products" className="text-base font-medium hover:text-primary transition-colors">
+                      Products
                     </Link>
-                    <Link href="/customize">
-                      <a className="text-base font-medium hover:text-primary transition-colors">
-                        Customize
-                      </a>
+                    <Link href="/customize" className="text-base font-medium hover:text-primary transition-colors">
+                      Customize
                     </Link>
-                    <Link href="/wishlist">
-                      <a className="text-base font-medium hover:text-primary transition-colors">
-                        Wishlist
-                      </a>
+                    <Link href="/wishlist" className="text-base font-medium hover:text-primary transition-colors">
+                      Wishlist
                     </Link>
                   </nav>
                   

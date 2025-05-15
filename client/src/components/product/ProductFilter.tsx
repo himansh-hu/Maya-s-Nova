@@ -187,7 +187,7 @@ export default function ProductFilter({
                     setPriceRange([0, 1000]);
                     setActiveFilters(prev => {
                       const newFilters = { ...prev, minPrice: 0, maxPrice: 1000 };
-                      onFilterChange(newFilters);
+                      onChange(newFilters);
                       return newFilters;
                     });
                   }}
