@@ -12,10 +12,10 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  // Ensure all API requests go to the backend by adding hostname
+  // Use relative paths for API requests (works for both localhost and Replit)
   const fullUrl = url.startsWith('http') 
     ? url
-    : `http://localhost:5000${url}`;
+    : url;
     
   const res = await fetch(fullUrl, {
     method,
@@ -37,10 +37,10 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    // Ensure all API requests go to the backend by adding hostname
+    // Use relative paths for API requests (works for both localhost and Replit)
     const url = (queryKey[0] as string).startsWith('http') 
       ? (queryKey[0] as string)
-      : `http://localhost:5000${queryKey[0]}`;
+      : (queryKey[0] as string);
       
     const res = await fetch(url, {
       credentials: "include",
