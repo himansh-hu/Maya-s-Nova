@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle, Upload, Clock, Loader2, CheckCircle, ShoppingCart, CloudUpload } from 'lucide-react';
+import { AlertCircle, Upload, Clock, Loader2, CheckCircle, ShoppingCart, UploadCloud } from 'lucide-react';
 
 interface CustomizationOptions {
   model: string;
@@ -36,9 +36,9 @@ export default function Customize() {
   
   // Sample predefined models
   const predefinedModels = [
-    { id: 'phone-stand', name: 'Phone Stand', model: '/models/phone-stand.gltf', price: 24.99 },
-    { id: 'desk-organizer', name: 'Desk Organizer', model: '/models/organizer.gltf', price: 34.99 },
-    { id: 'planter', name: 'Planter Pot', model: '/models/planter.gltf', price: 29.99 },
+    { id: 'phone-stand', name: 'Phone Stand', model: '/models/phone-stand.gltf', price: 240 },
+    { id: 'desk-organizer', name: 'Desk Organizer', model: '/models/organizer.gltf', price: 340 },
+    { id: 'planter', name: 'Planter Pot', model: '/models/planter.gltf', price: 299 },
   ];
   
   // Handle customization changes
@@ -54,8 +54,8 @@ export default function Customize() {
     }
   };
   
-  // Handle file upload simulation
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle file upload
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     
     const file = e.target.files[0];
@@ -70,36 +70,64 @@ export default function Customize() {
       return;
     }
     
-    // Check file extension
-    const validExtensions = ['.stl', '.obj', '.gltf', '.glb'];
+    // Check file extension - updated to support new formats
+    const validExtensions = ['.obj', '.glb', '.jpg', '.jpeg', '.png'];
     const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
     
     if (!validExtensions.includes(fileExtension)) {
       toast({
         title: "Invalid File Type",
-        description: "Please upload an STL, OBJ, GLTF, or GLB file.",
+        description: "Please upload an OBJ, GLB, JPG, or PNG file.",
         variant: "destructive",
       });
       return;
     }
     
-    // Simulate upload
     setIsUploading(true);
     
-    setTimeout(() => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || 'Upload failed');
+      }
+      
       setIsUploading(false);
       setUploadSuccess(true);
+      
+      // Update the model URL if it's a 3D model
+      if (result.file.type === 'model') {
+        handleCustomizationChange('model', result.file.path);
+      }
+      
+      toast({
+        title: "Upload Successful",
+        description: result.file.type === 'model' 
+          ? "Your 3D model has been uploaded and optimized for web viewing."
+          : "Your image has been uploaded successfully.",
+      });
       
       // Reset after 3 seconds
       setTimeout(() => {
         setUploadSuccess(false);
       }, 3000);
       
+    } catch (error) {
+      setIsUploading(false);
       toast({
-        title: "File Uploaded Successfully",
-        description: `${file.name} has been uploaded and is ready for customization.`,
+        title: "Upload Failed",
+        description: error instanceof Error ? error.message : "An error occurred during upload.",
+        variant: "destructive",
       });
-    }, 2000);
+    }
   };
   
   // Handle add to cart
@@ -231,6 +259,74 @@ export default function Customize() {
                   models={predefinedModels} 
                   onCustomizationChange={handleCustomizationChange}
                   onModelChange={handleModelChange}
+                  onFileUpload={async (file: File) => {
+                    // Validate file type
+                    const allowedTypes = ['.obj', '.glb', '.jpg', '.jpeg', '.png'];
+                    const fileExt = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+                    
+                    if (!allowedTypes.includes(fileExt)) {
+                      toast({
+                        title: "Invalid File Type",
+                        description: `Please upload only ${allowedTypes.join(', ')} files.`,
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                    
+                    // Validate file size (50MB limit)
+                    if (file.size > 50 * 1024 * 1024) {
+                      toast({
+                        title: "File Too Large",
+                        description: "Please upload files smaller than 50MB.",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+                    
+                    setIsUploading(true);
+                    
+                    try {
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      
+                      const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData,
+                      });
+                      
+                      const result = await response.json();
+                      
+                      if (!response.ok) {
+                        throw new Error(result.message || 'Upload failed');
+                      }
+                      
+                      setIsUploading(false);
+                      setUploadSuccess(true);
+                      
+                      // Update the model URL if it's a 3D model
+                      if (result.file.type === 'model') {
+                        handleCustomizationChange('model', result.file.path);
+                      }
+                      
+                      toast({
+                        title: "Upload Successful",
+                        description: result.file.type === 'model' 
+                          ? "Your 3D model has been uploaded and optimized for web viewing."
+                          : "Your image has been uploaded successfully.",
+                      });
+                      
+                      // Reset success state after 3 seconds
+                      setTimeout(() => setUploadSuccess(false), 3000);
+                      
+                    } catch (error) {
+                      setIsUploading(false);
+                      toast({
+                        title: "Upload Failed",
+                        description: error instanceof Error ? error.message : "An error occurred during upload.",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
                 />
                 
                 <div className="mt-6">
@@ -250,47 +346,104 @@ export default function Customize() {
           <TabsContent value="upload" className="space-y-8">
             <div className="max-w-3xl mx-auto">
               <div className="bg-card rounded-lg border p-6">
-                <h2 className="text-xl font-semibold mb-4">Upload Your Own 3D Model</h2>
+                <h2 className="text-xl font-semibold mb-4">Upload Your Own Files</h2>
                 
                 <p className="text-muted-foreground mb-6">
-                  Have a 3D model ready? Upload your STL, OBJ, or GLTF file and we'll print it for you!
-                  Our experts will review your design to ensure it can be printed with high quality.
+                  Upload your 3D models or images for customization. We support OBJ and GLB files for 3D models, 
+                  and JPG/PNG for images. OBJ files will be automatically converted to optimized GLB format.
                 </p>
                 
+                {/* File Type Selection */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-medium mb-3">Choose File Type</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="border rounded-lg p-4 hover:border-primary transition-colors">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                          <span className="text-primary font-semibold text-sm">3D</span>
+                        </div>
+                        <h4 className="font-medium">3D Model</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Upload .obj or .glb files for 3D printing and visualization
+                      </p>
+                      <div className="text-xs text-muted-foreground">
+                        <p>• <strong>Recommended:</strong> .glb (optimized for web)</p>
+                        <p>• <strong>Auto-converted:</strong> .obj → .glb with compression</p>
+                      </div>
+                    </div>
+                    
+                    <div className="border rounded-lg p-4 hover:border-primary transition-colors">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                          <span className="text-primary font-semibold text-sm">IMG</span>
+                        </div>
+                        <h4 className="font-medium">Image</h4>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Upload .jpg or .png files for textures and references
+                      </p>
+                      <div className="text-xs text-muted-foreground">
+                        <p>• <strong>Supported:</strong> .jpg, .png</p>
+                        <p>• <strong>Max size:</strong> 50MB per file</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
                 <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                  <CloudUpload className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                  <UploadCloud className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
                   
                   {isUploading ? (
                     <div className="space-y-2">
                       <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                      <p className="text-sm">Uploading your file...</p>
+                      <p className="text-sm">Uploading and processing your file...</p>
+                      <p className="text-xs text-muted-foreground">
+                        This may take a moment for 3D model optimization
+                      </p>
                     </div>
                   ) : uploadSuccess ? (
                     <div className="space-y-2">
                       <CheckCircle className="h-6 w-6 text-green-500 mx-auto" />
                       <p className="text-sm">Upload successful!</p>
+                      <p className="text-xs text-muted-foreground">
+                        Your file has been processed and is ready to use
+                      </p>
                     </div>
                   ) : (
                     <>
-                      <p className="mb-4">Drag and drop your 3D file here or</p>
+                      <p className="mb-4">Drag and drop your file here or</p>
                       <label className="inline-flex items-center px-4 py-2 border border-primary text-primary rounded-md cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300">
                         <Upload className="h-4 w-4 mr-2" />
                         Browse Files
                         <input 
                           type="file" 
                           className="hidden" 
-                          accept=".stl,.obj,.gltf,.glb"
+                          accept=".obj,.glb,.jpg,.jpeg,.png"
                           onChange={handleFileUpload}
                         />
                       </label>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Supported formats: STL, OBJ, GLTF, GLB. Maximum file size: 50MB
-                      </p>
+                      <div className="mt-3 text-xs text-muted-foreground space-y-1">
+                        <p><strong>3D Models:</strong> .obj, .glb (max 50MB)</p>
+                        <p><strong>Images:</strong> .jpg, .png (max 50MB)</p>
+                        <p className="text-primary">💡 OBJ files are automatically converted to optimized GLB format</p>
+                      </div>
                     </>
                   )}
                 </div>
                 
                 <Separator className="my-8" />
+                
+                {/* Help Section */}
+                <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+                  <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">💡 Upload Tips</h3>
+                  <div className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                    <p><strong>Recommended Format:</strong> .glb for 3D models, .jpg/.png for images</p>
+                    <p><strong>Auto-Conversion:</strong> .obj files are automatically converted to optimized .glb format</p>
+                    <p><strong>File Size:</strong> Maximum 50MB per file for optimal processing</p>
+                    <p><strong>Quality:</strong> All uploaded files are optimized for web viewing and 3D printing</p>
+                  </div>
+                </div>
                 
                 <h3 className="text-lg font-medium mb-4">Design Specifications</h3>
                 

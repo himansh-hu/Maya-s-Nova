@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useSearch } from 'wouter';
+import { useLocation } from 'wouter';
 import { Helmet } from 'react-helmet';
 import { useProducts } from '@/hooks/useProducts';
 import { useCategories } from '@/hooks/useCategories';
@@ -24,7 +24,9 @@ interface ProductFilters {
 
 export default function Products() {
   const [_, setLocation] = useLocation();
-  const search = useSearch();
+  // const search = useSearch();
+  // Replace useSearch with window.location.search
+  const search = typeof window !== "undefined" ? window.location.search : "";
   const searchParams = new URLSearchParams(search);
   
   const [page, setPage] = useState(1);

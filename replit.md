@@ -83,10 +83,57 @@ Preferred communication style: Simple, everyday language.
 - **Database Tools**: Drizzle Kit for migrations and schema management
 - **Replit Integration**: Replit-specific plugins for development environment
 
+### File Upload and Processing
+- **File Upload**: Multer middleware for handling multipart file uploads
+- **3D Model Processing**: Automatic OBJ to GLB conversion using obj2gltf library
+- **GLB Optimization**: Draco compression and mesh optimization using gltf-pipeline
+- **Image Processing**: Sharp library for image optimization and processing
+- **File Validation**: Server-side validation for file types and sizes
+- **Storage Management**: Organized file storage with automatic cleanup
+
+### Supported File Formats
+- **3D Models**: 
+  - `.obj` files (automatically converted to optimized GLB)
+  - `.glb` files (optimized with Draco compression)
+- **Images**: 
+  - `.jpg` and `.jpeg` files
+  - `.png` files
+- **File Size Limit**: 50MB maximum per file
+- **Auto-Conversion**: OBJ files are automatically converted to GLB format with web optimization
+
 ### Third-Party Services
 - **Database Hosting**: Neon (serverless PostgreSQL)
 - **Development Environment**: Replit with custom configuration
 - **CDN**: Configured for external asset delivery
 - **Payment Processing**: Stripe integration (configured for future implementation)
+
+## File Upload Feature
+
+The application includes a comprehensive file upload system that allows users to upload their own 3D models and images for customization:
+
+### Upload Locations
+1. **Customization Page**: Main upload interface with file type selection
+2. **Customizer Controls**: Quick upload option within the customization panel
+
+### File Processing Pipeline
+1. **Upload Validation**: Client and server-side validation for file types and sizes
+2. **Temporary Storage**: Files are initially stored in a temporary directory
+3. **Format Conversion**: OBJ files are automatically converted to GLB format
+4. **Optimization**: GLB files are optimized with Draco compression for web delivery
+5. **Final Storage**: Processed files are moved to appropriate directories (`uploads/models/` or `uploads/images/`)
+6. **Cleanup**: Temporary files are automatically removed after processing
+
+### User Experience Features
+- **Clear File Type Restrictions**: Visual indicators showing supported formats
+- **Real-time Upload Progress**: Loading states and progress indicators
+- **Automatic Model Integration**: Uploaded 3D models are immediately available in the 3D viewer
+- **Error Handling**: Comprehensive error messages for invalid files or upload failures
+- **File Size Warnings**: Clear messaging about file size limits
+
+### Technical Implementation
+- **Backend API**: `/api/upload` endpoint handles file processing
+- **Frontend Integration**: React components with drag-and-drop support
+- **File Serving**: Static file serving for uploaded assets
+- **Security**: File type validation and size limits prevent abuse
 
 The application is designed to be scalable and maintainable, with a clear separation between frontend and backend concerns, comprehensive type safety, and modern development practices throughout the stack.

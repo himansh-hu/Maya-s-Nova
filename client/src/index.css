@@ -48,10 +48,7 @@
   }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-
+  :root { color-scheme: light dark; }
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }

@@ -12,7 +12,11 @@ export default function Footer() {
           {/* Company Information */}
           <div className="lg:col-span-2">
             <Link href="/" className="inline-block">
-              <span className="text-2xl font-bold font-['Space_Grotesk'] text-primary">3D<span className="text-orange-500">Print</span><span className="text-teal-500">Wonders</span></span>
+              <span className="text-2xl font-bold font-['Space_Grotesk']">
+                <span className="bg-gradient-to-r from-[#6a11cb] via-[#a044ff] to-[#ff6fd8] bg-clip-text text-transparent">Maya</span>
+                <span className="bg-gradient-to-r from-[#FFD700] via-[#FFC300] to-[#FFB347] bg-clip-text text-transparent">’s </span>
+                <span className="bg-gradient-to-r from-[#00c6ff] via-[#0072ff] to-[#1e3c72] bg-clip-text text-transparent">Nova</span>
+              </span>
             </Link>
             <p className="mt-4 text-muted-foreground max-w-md">
               Bringing your ideas to life through innovative 3D printing technology. Customize, create, and collect unique 3D-printed products designed for modern living.
@@ -134,7 +138,7 @@ export default function Footer() {
         
         <div className="flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} 3D Print Wonders. All rights reserved.
+            &copy; {new Date().getFullYear()} Maya’s Nova. All rights reserved.
           </p>
           <div className="flex space-x-4 mt-4 md:mt-0">
             <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

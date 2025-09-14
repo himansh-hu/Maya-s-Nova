@@ -64,7 +64,11 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
-              <span className="text-2xl font-bold font-['Space_Grotesk'] text-primary">3D<span className="text-orange-500">Print</span><span className="text-teal-500">Wonders</span></span>
+              <span className="text-2xl font-bold font-['Space_Grotesk']">
+                <span className="bg-gradient-to-r from-[#6a11cb] via-[#a044ff] to-[#ff6fd8] bg-clip-text text-transparent">Maya</span>
+                <span className="bg-gradient-to-r from-[#FFD700] via-[#FFC300] to-[#FFB347] bg-clip-text text-transparent">’s </span>
+                <span className="bg-gradient-to-r from-[#00c6ff] via-[#0072ff] to-[#1e3c72] bg-clip-text text-transparent">Nova</span>
+              </span>
             </Link>
           </div>
           
@@ -212,7 +216,11 @@ export default function Navbar() {
                 <div className="flex flex-col h-full py-6">
                   <div className="flex justify-between items-center mb-8">
                     <Link href="/" className="flex items-center">
-                      <span className="text-xl font-bold font-['Space_Grotesk'] text-primary">3D<span className="text-orange-500">Print</span><span className="text-teal-500">Wonders</span></span>
+                      <span className="text-xl font-bold font-['Space_Grotesk']">
+                        <span className="bg-gradient-to-r from-[#6a11cb] via-[#a044ff] to-[#ff6fd8] bg-clip-text text-transparent">Maya</span>
+                        <span className="bg-gradient-to-r from-[#FFD700] via-[#FFC300] to-[#FFB347] bg-clip-text text-transparent">’s </span>
+                        <span className="bg-gradient-to-r from-[#00c6ff] via-[#0072ff] to-[#1e3c72] bg-clip-text text-transparent">Nova</span>
+                      </span>
                     </Link>
                   </div>
                   

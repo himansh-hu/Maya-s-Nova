@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
-import { Palette, Scale, Type } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Palette, Scale, Type, Upload, UploadCloud } from 'lucide-react';
 
 interface Model {
   id: string;
@@ -28,13 +29,15 @@ interface CustomizerControlsProps {
   models: Model[];
   onCustomizationChange: (key: keyof CustomizationOptions, value: any) => void;
   onModelChange: (modelId: string) => void;
+  onFileUpload?: (file: File) => void;
 }
 
 export default function CustomizerControls({
   customization,
   models,
   onCustomizationChange,
-  onModelChange
+  onModelChange,
+  onFileUpload
 }: CustomizerControlsProps) {
   const [activeModelId, setActiveModelId] = useState<string>(
     models.find(m => m.model === customization.model)?.id || models[0].id
@@ -77,6 +80,47 @@ export default function CustomizerControls({
           </div>
         </CardContent>
       </Card>
+
+      {/* File Upload Section */}
+      {onFileUpload && (
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <UploadCloud className="h-5 w-5 text-primary" />
+              <h3 className="text-lg font-medium">Upload Your Own Model</h3>
+            </div>
+            
+            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+              <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-3" />
+              <p className="text-sm text-muted-foreground mb-4">
+                Upload your own 3D model or image
+              </p>
+              
+              <label className="inline-flex items-center px-4 py-2 border border-primary text-primary rounded-md cursor-pointer hover:bg-primary hover:text-white transition-colors duration-300">
+                <Upload className="h-4 w-4 mr-2" />
+                Choose File
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept=".obj,.glb,.jpg,.jpeg,.png"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file && onFileUpload) {
+                      onFileUpload(file);
+                    }
+                  }}
+                />
+              </label>
+              
+              <div className="mt-3 text-xs text-muted-foreground space-y-1">
+                <p><strong>3D Models:</strong> .obj, .glb (max 50MB)</p>
+                <p><strong>Images:</strong> .jpg, .png (max 50MB)</p>
+                <p className="text-primary">💡 OBJ files are auto-converted to optimized GLB</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardContent className="p-6 space-y-6">

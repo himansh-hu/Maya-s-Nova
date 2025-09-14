@@ -8,13 +8,19 @@ export default function Hero() {
       <div className="container mx-auto grid md:grid-cols-2 gap-8 items-center py-12 md:py-24">
         {/* Left column text content */}
         <div className="space-y-6 text-center md:text-left">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-            <span className="text-primary">3D Printed</span>{" "}
-            <span className="block">Wonders for Your World</span>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+            <span className="block">
+              <span className="bg-gradient-to-r from-[#6a11cb] via-[#a044ff] to-[#ff6fd8] bg-clip-text text-transparent">Maya</span>
+              <span className="bg-gradient-to-r from-[#FFD700] via-[#FFC300] to-[#FFB347] bg-clip-text text-transparent">’s </span>
+              <span className="bg-gradient-to-r from-[#00c6ff] via-[#0072ff] to-[#1e3c72] bg-clip-text text-transparent">Nova</span>
+            </span>
+            <span className="sr-only">Maya’s Nova</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto md:mx-0">
-            Innovative, customizable 3D printed gadgets, accessories, and models
-            with interactive previews and fast shipping to your doorstep.
+          <p className="text-xl md:text-2xl font-semibold">
+            Bring Your Imagination to Reality
+          </p>
+          <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto md:mx-0">
+            Personalized 3D creations, crafted with cosmic innovation — designed by you, printed by Maya’s Nova.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
             <Button size="lg" asChild>

@@ -11,10 +11,39 @@ import {
   insertOrderItemSchema,
   insertReviewSchema
 } from "@shared/schema";
+import axios from "axios";
+import multer from "multer";
+import path from "path";
+import fs from "fs/promises";
+import { promisify } from "util";
+import { exec } from "child_process";
+import gltfPipeline from "gltf-pipeline";
+import obj2gltf from "obj2gltf";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Prefix all routes with /api
   const apiRouter = "/api";
+
+  // Exchange Rates Route (Open Exchange Rates via axios)
+  app.get(`${apiRouter}/exchange-rates`, async (_req: Request, res: Response) => {
+    try {
+      const apiKey = process.env.OPEN_EXCHANGE_RATES_API_KEY;
+      if (!apiKey) {
+        return res.status(500).json({ message: "Missing OPEN_EXCHANGE_RATES_API_KEY" });
+      }
+
+      const url = `https://openexchangerates.org/api/latest.json?app_id=${apiKey}`;
+      const { data } = await axios.get(url, { timeout: 10000 });
+      // data: { disclaimer, license, timestamp, base, rates }
+      return res.status(200).json({
+        base: data.base || 'USD',
+        rates: data.rates || {},
+        timestamp: data.timestamp,
+      });
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch exchange rates" });
+    }
+  });
 
   // Auth Routes
   app.post(`${apiRouter}/auth/register`, async (req: Request, res: Response) => {
@@ -160,6 +189,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Featured Products - MUST be before /products/:slug route
+  app.get(`${apiRouter}/products/featured`, async (_req: Request, res: Response) => {
+    try {
+      const { products } = await storage.getProducts({ featured: true, limit: 8 });
+      return res.status(200).json(products);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to fetch featured products" });
+    }
+  });
+
   app.get(`${apiRouter}/products/:slug`, async (req: Request, res: Response) => {
     try {
       const { slug } = req.params;
@@ -172,16 +211,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(200).json(product);
     } catch (error) {
       return res.status(500).json({ message: "Failed to fetch product" });
-    }
-  });
-
-  // Featured Products
-  app.get(`${apiRouter}/products/featured`, async (_req: Request, res: Response) => {
-    try {
-      const { products } = await storage.getProducts({ featured: true, limit: 8 });
-      return res.status(200).json(products);
-    } catch (error) {
-      return res.status(500).json({ message: "Failed to fetch featured products" });
     }
   });
 
@@ -573,6 +602,185 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       return res.status(500).json({ message: "Failed to create order" });
     }
+  });
+
+  // File Upload Configuration
+  const storage_config = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadPath = path.join(process.cwd(), 'uploads', 'temp');
+      cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+  });
+
+  const upload = multer({
+    storage: storage_config,
+    limits: {
+      fileSize: 50 * 1024 * 1024, // 50MB limit
+    },
+    fileFilter: (req, file, cb) => {
+      const allowedTypes = ['.obj', '.glb', '.jpg', '.jpeg', '.png'];
+      const ext = path.extname(file.originalname).toLowerCase();
+      
+      if (allowedTypes.includes(ext)) {
+        cb(null, true);
+      } else {
+        cb(new Error(`File type ${ext} is not allowed. Only ${allowedTypes.join(', ')} files are accepted.`));
+      }
+    }
+  });
+
+  // Ensure upload directories exist
+  const ensureUploadDirs = async () => {
+    const dirs = ['uploads', 'uploads/temp', 'uploads/models', 'uploads/images'];
+    for (const dir of dirs) {
+      try {
+        await fs.mkdir(path.join(process.cwd(), dir), { recursive: true });
+      } catch (error) {
+        // Directory might already exist, ignore error
+      }
+    }
+  };
+
+  // File conversion utilities
+  const convertObjToGlb = async (inputPath: string, outputPath: string): Promise<void> => {
+    try {
+      const obj2gltfOptions = {
+        binary: true,
+        embedImage: true,
+        optimize: true
+      };
+      
+      const gltf = await obj2gltf(inputPath, obj2gltfOptions);
+      await fs.writeFile(outputPath, gltf);
+    } catch (error) {
+      throw new Error(`Failed to convert OBJ to GLB: ${error}`);
+    }
+  };
+
+  const optimizeGlb = async (inputPath: string, outputPath: string): Promise<void> => {
+    try {
+      const gltfBuffer = await fs.readFile(inputPath);
+      const options = {
+        dracoOptions: {
+          compressionLevel: 10,
+          quantizePositionBits: 14,
+          quantizeNormalBits: 10,
+          quantizeTexcoordBits: 12,
+          quantizeColorBits: 8,
+          quantizeGenericBits: 12,
+          unifiedQuantization: false
+        }
+      };
+      
+      const processedGltf = await gltfPipeline.processGltf(gltfBuffer, options);
+      await fs.writeFile(outputPath, processedGltf.gltf);
+    } catch (error) {
+      throw new Error(`Failed to optimize GLB: ${error}`);
+    }
+  };
+
+  // Upload Routes
+  app.post(`${apiRouter}/upload`, upload.single('file'), async (req: Request, res: Response) => {
+    try {
+      await ensureUploadDirs();
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const file = req.file;
+      const fileExt = path.extname(file.originalname).toLowerCase();
+      const fileName = path.basename(file.originalname, fileExt);
+      const tempPath = file.path;
+      
+      let finalPath: string;
+      let fileType: 'model' | 'image';
+      let optimizedPath: string | null = null;
+
+      // Determine file type and processing
+      if (['.obj', '.glb'].includes(fileExt)) {
+        fileType = 'model';
+        const finalDir = path.join(process.cwd(), 'uploads', 'models');
+        await fs.mkdir(finalDir, { recursive: true });
+        
+        if (fileExt === '.obj') {
+          // Convert OBJ to GLB
+          const glbPath = path.join(finalDir, `${fileName}.glb`);
+          await convertObjToGlb(tempPath, glbPath);
+          
+          // Optimize the converted GLB
+          const optimizedGlbPath = path.join(finalDir, `${fileName}_optimized.glb`);
+          await optimizeGlb(glbPath, optimizedGlbPath);
+          
+          finalPath = `/uploads/models/${fileName}_optimized.glb`;
+          optimizedPath = `/uploads/models/${fileName}_optimized.glb`;
+          
+          // Clean up temporary files
+          await fs.unlink(tempPath);
+          await fs.unlink(glbPath);
+        } else {
+          // Optimize existing GLB
+          const optimizedGlbPath = path.join(finalDir, `${fileName}_optimized.glb`);
+          await optimizeGlb(tempPath, optimizedGlbPath);
+          
+          finalPath = `/uploads/models/${fileName}_optimized.glb`;
+          optimizedPath = `/uploads/models/${fileName}_optimized.glb`;
+          
+          // Clean up temporary file
+          await fs.unlink(tempPath);
+        }
+      } else {
+        // Handle images
+        fileType = 'image';
+        const finalDir = path.join(process.cwd(), 'uploads', 'images');
+        await fs.mkdir(finalDir, { recursive: true });
+        
+        const finalImagePath = path.join(finalDir, `${fileName}${fileExt}`);
+        await fs.rename(tempPath, finalImagePath);
+        finalPath = `/uploads/images/${fileName}${fileExt}`;
+      }
+
+      res.status(200).json({
+        message: "File uploaded and processed successfully",
+        file: {
+          originalName: file.originalname,
+          fileName: fileName,
+          path: finalPath,
+          type: fileType,
+          size: file.size,
+          optimizedPath: optimizedPath
+        }
+      });
+
+    } catch (error) {
+      // Clean up temporary file on error
+      if (req.file) {
+        try {
+          await fs.unlink(req.file.path);
+        } catch (cleanupError) {
+          console.error('Failed to clean up temporary file:', cleanupError);
+        }
+      }
+      
+      console.error('Upload error:', error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Upload failed" 
+      });
+    }
+  });
+
+  // Serve uploaded files
+  app.use('/uploads', (req, res, next) => {
+    const filePath = path.join(process.cwd(), 'uploads', req.path);
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        res.status(404).json({ message: "File not found" });
+      }
+    });
   });
 
   // Setup HTTP server

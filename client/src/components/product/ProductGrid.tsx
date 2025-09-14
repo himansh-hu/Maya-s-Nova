@@ -7,6 +7,7 @@ import { Eye, ShoppingCart, Star } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrency } from '@/context/CurrencyContext';
+import { ThreeViewer } from '@/components/ui/three-viewer';
 
 // Define types locally until schema is properly connected
 interface Product {
@@ -16,6 +17,7 @@ interface Product {
   description?: string;
   price: number;
   imageUrl?: string;
+  modelUrl?: string;
   category?: string;
   categorySlug?: string;
   rating?: number;
@@ -132,15 +134,26 @@ export default function ProductGrid({
           <div className="relative">
             <Link href={`/products/${product.slug}`}>
               <div className="aspect-square relative overflow-hidden group">
-                <div 
-                  className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
-                  style={{ 
-                    backgroundImage: product.imageUrl 
-                      ? `url(${product.imageUrl})` 
-                      : 'url(https://placehold.co/300x300/f1f5f9/64748b?text=No+Image)',
-                    backgroundSize: 'cover'
-                  }}
-                />
+                {product.modelUrl ? (
+                  <div className="w-full h-full">
+                    <ThreeViewer 
+                      modelUrl={product.modelUrl} 
+                      height="100%" 
+                      className="w-full h-full"
+                      backgroundColor="transparent"
+                    />
+                  </div>
+                ) : (
+                  <div 
+                    className="w-full h-full bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
+                    style={{ 
+                      backgroundImage: product.imageUrl 
+                        ? `url(${product.imageUrl})` 
+                        : 'url(https://placehold.co/300x300/f1f5f9/64748b?text=No+Image)',
+                      backgroundSize: 'cover'
+                    }}
+                  />
+                )}
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <Button variant="secondary" size="sm" className="mx-1">
                     <Eye className="h-4 w-4 mr-2" /> Quick View
