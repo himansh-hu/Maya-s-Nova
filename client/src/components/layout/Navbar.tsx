@@ -3,6 +3,7 @@ import { Link, useLocation } from 'wouter';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useTheme } from '@/context/ThemeContext';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useCurrency } from '@/context/CurrencyContext';
 import CurrencySelector from '@/components/currency/CurrencySelector';
 import { Button } from '@/components/ui/button';
@@ -25,8 +26,6 @@ import {
   Heart,
   Menu,
   X,
-  Sun,
-  Moon,
   LogOut,
   Package
 } from 'lucide-react';
@@ -37,7 +36,7 @@ export default function Navbar() {
   const [location] = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
   const { itemCount } = useCart();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const { currency } = useCurrency();
 
   // Handle scroll effect
@@ -113,19 +112,11 @@ export default function Navbar() {
             <CurrencySelector />
             
             {/* Theme Toggle */}
-            <Button 
+            <ThemeToggle 
               variant="ghost" 
               size="icon" 
-              className="rounded-full" 
-              onClick={toggleTheme}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
+              className="rounded-full"
+            />
             
             {/* Wishlist */}
             <Button variant="ghost" size="icon" className="rounded-full" asChild>
@@ -257,19 +248,11 @@ export default function Navbar() {
                       <span className="text-sm font-medium mr-3">Currency:</span>
                       <CurrencySelector />
                     </div>
-                    <Button 
+                    <ThemeToggle 
                       variant="ghost" 
                       size="icon" 
-                      className="rounded-full" 
-                      onClick={toggleTheme}
-                      aria-label="Toggle theme"
-                    >
-                      {theme === 'dark' ? (
-                        <Sun className="h-5 w-5" />
-                      ) : (
-                        <Moon className="h-5 w-5" />
-                      )}
-                    </Button>
+                      className="rounded-full"
+                    />
                   </div>
                   
                   {/* Account Section */}
@@ -324,18 +307,11 @@ export default function Navbar() {
                       <CurrencySelector />
                     </div>
                     
-                    <Button 
+                    <ThemeToggle 
                       variant="outline" 
                       className="w-full justify-between" 
-                      onClick={toggleTheme}
-                    >
-                      <span>Toggle Theme</span>
-                      {theme === 'dark' ? (
-                        <Sun className="h-4 w-4" />
-                      ) : (
-                        <Moon className="h-4 w-4" />
-                      )}
-                    </Button>
+                      showLabel={true}
+                    />
                   </div>
                 </div>
               </SheetContent>

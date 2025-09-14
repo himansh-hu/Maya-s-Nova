@@ -1,0 +1,103 @@
+// client/src/data/products.ts
+export interface Product {
+  id: number;
+  name: string;
+  slug: string;
+  price: number;
+  modelUrl: string; // path to .glb file in public/products
+  category: string;
+  featured?: boolean;
+}
+
+export const products: Product[] = [
+  {
+    id: 1,
+    name: "Gastly",
+    slug: "gastly",
+    price: 10,
+    modelUrl: "/products/gastly.glb",
+    category: "toys",
+    featured: true,
+  },
+  {
+    id: 2,
+    name: "Gengar",
+    slug: "gengar",
+    price: 15,
+    modelUrl: "/products/gengar.glb",
+    category: "toys",
+    featured: true,
+  },
+  {
+    id: 3,
+    name: "Ghost Pen Holder",
+    slug: "ghost-pen-holder",
+    price: 25,
+    modelUrl: "/products/ghost pen holder.glb",
+    category: "home-decor",
+    featured: true,
+  },
+  {
+    id: 4,
+    name: "Ghost Pen Holder 01",
+    slug: "ghost-pen-holder-01",
+    price: 28,
+    modelUrl: "/products/ghost pen holder01.glb",
+    category: "home-decor",
+    featured: true,
+  },
+  {
+    id: 5,
+    name: "Groot",
+    slug: "groot",
+    price: 20,
+    modelUrl: "/products/groot.glb",
+    category: "decor",
+    featured: true,
+  },
+  {
+    id: 6,
+    name: "Groot HONE STAND",
+    slug: "groot-hone-stand",
+    price: 22,
+    modelUrl: "/products/grootHONE STAND.glb",
+    category: "gadgets",
+    featured: true,
+  },
+  {
+    id: 7,
+    name: "Skull Cup",
+    slug: "skull-cup",
+    price: 18,
+    modelUrl: "/products/skull cup.glb",
+    category: "home-decor",
+    featured: true,
+  },
+  {
+    id: 8,
+    name: "Skull Headphone 03",
+    slug: "skull-headphone-03",
+    price: 30,
+    modelUrl: "/products/skull headphone 03.glb",
+    category: "gadgets",
+    featured: true,
+  },
+  {
+    id: 9,
+    name: "Skull Headphone Holder 02",
+    slug: "skull-headphone-holder-02",
+    price: 35,
+    modelUrl: "/products/skull Headphone holder02.glb",
+    category: "gadgets",
+    featured: true,
+  },
+  {
+    id: 10,
+    name: "Skull Headphone",
+    slug: "skull-headphone",
+    price: 27,
+    modelUrl: "/products/skull headphone.glb",
+    category: "gadgets",
+    featured: true,
+  },
+];
